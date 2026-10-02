@@ -1,0 +1,89 @@
+{
+  "name": "video-captions",
+  "version": "0.1.0",
+  "description": "Paced captions, slow typing, ASS subtitles, and chapters for Playwright recordings.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./runtime": {
+      "import": {
+        "types": "./dist/esm/runtime.d.ts",
+        "default": "./dist/esm/runtime.js"
+      },
+      "require": {
+        "types": "./dist/cjs/runtime.d.ts",
+        "default": "./dist/cjs/runtime.js"
+      }
+    },
+    "./reporter": {
+      "import": {
+        "types": "./dist/esm/reporter.d.ts",
+        "default": "./dist/esm/reporter.js"
+      },
+      "require": {
+        "types": "./dist/cjs/reporter.d.ts",
+        "default": "./dist/cjs/reporter.js"
+      }
+    },
+    "./slow-typing": {
+      "import": {
+        "types": "./dist/esm/slow-typing.d.ts",
+        "default": "./dist/esm/slow-typing.js"
+      },
+      "require": {
+        "types": "./dist/cjs/slow-typing.d.ts",
+        "default": "./dist/cjs/slow-typing.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "playwright",
+    "video",
+    "captions",
+    "subtitles",
+    "ass",
+    "ffmpeg",
+    "chapters"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit && tsc -p tests/tsconfig.json",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "prepack": "npm run build"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.63.0 <2"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22.0.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

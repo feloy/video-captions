@@ -1,0 +1,76 @@
+name: Publish GitHub package
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-github-package
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Validate and package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and test
+        run: npm test
+
+      - name: Check TypeScript declarations
+        run: npm run typecheck
+
+      - name: Prepare GitHub Packages metadata
+        run: node scripts/prepare-github-package.mjs
+
+      - name: Create package tarball
+        run: |
+          mkdir -p artifacts
+          npm pack --pack-destination artifacts
+
+      - name: Upload package tarball
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: video-captions-package
+          path: artifacts/*.tgz
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish to GitHub Packages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 24
+          registry-url: https://npm.pkg.github.com
+          package-manager-cache: false
+
+      - uses: actions/download-artifact@v8.0.1
+        with:
+          name: video-captions-package
+          path: artifacts
+
+      - name: Publish package tarball
+        run: npm publish ./artifacts/*.tgz --registry=https://npm.pkg.github.com --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
